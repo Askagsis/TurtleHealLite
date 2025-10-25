@@ -1,0 +1,9 @@
+## Interface: 11200
+## Title: TurtleHealLite
+## Notes: Lightweight HealBot-inspired addon for Turtle WoW (vanilla)
+## Author: YourName
+## Version: 0.1
+TurtleHealLite.lua
+TurtleHealLite.xml
+README.md
+LICENSE
