@@ -32,3 +32,5 @@ Il permet de :
   - Couleurs par joueur
   - Frames de groupe/raid
   - Comportement “mouseover-only”
+
+EN COURS DE DEVELOPPEMENT. NON TERMINé
