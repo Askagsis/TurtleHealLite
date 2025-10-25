@@ -56,7 +56,6 @@ local function UpdateButtons()
       btn.unit = unit
       btn:SetAttribute("unit", unit)
       btn.text:SetText(unit)
-      -- update assigned spell in case changed
       btn:SetAttribute("spell", TH.db.spells.primary)
     end
   end
@@ -80,7 +79,7 @@ local function GetTrackedBuffRemaining(unit, spellNames)
   return nil
 end
 
--- build quick lookup of our spell names
+-- tracked spell names
 TH.trackedSpellNames = {
   ["Rejuvenation"] = true,
   ["Regrowth"] = true,
@@ -112,23 +111,26 @@ local function StartTicker()
   end)
 end
 
--- slash commands
+-- slash commands (/thl)
 SLASH_TURTLEHEALLITE1 = "/thl"
 SlashCmdList["TURTLEHEALLITE"] = function(msg)
-  local cmd, rest = msg:match("^(%S*)%s*(.-)$")
-  if cmd == "spell" and rest ~= "" then
-    TH.db.spells.primary = rest
-    print("TurtleHealLite: primary spell set to ", rest)
-    UpdateButtons()
-  elseif cmd == "show" and rest ~= "" then
-    TH.db.showTargets = {}
-    for u in rest:gmatch("%S+") do table.insert(TH.db.showTargets, u) end
-    UpdateButtons()
-  else
-    print("TurtleHealLite commands:")
-    print("/thl spell <name>   - set primary heal spell (left click)")
-    print("/thl show <units>   - set unit list (player target mouseover party1 ...)")
-  end
+    msg = msg or ""  -- s'assure que msg n'est jamais nil
+    local cmd, rest = msg:match("^(%S*)%s*(.-)$")
+    rest = rest or ""
+
+    if cmd == "spell" and rest ~= "" then
+        TH.db.spells.primary = rest
+        print("TurtleHealLite: primary spell set to", rest)
+        UpdateButtons()
+    elseif cmd == "show" and rest ~= "" then
+        TH.db.showTargets = {}
+        for u in rest:gmatch("%S+") do table.insert(TH.db.showTargets, u) end
+        UpdateButtons()
+    else
+        print("TurtleHealLite commands:")
+        print("/thl spell <name>   - set primary heal spell (left click)")
+        print("/thl show <units>   - set unit list (player target mouseover party1 ...)")
+    end
 end
 
 -- init
