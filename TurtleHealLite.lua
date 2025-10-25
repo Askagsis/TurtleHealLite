@@ -46,7 +46,6 @@ end
 TH.buttons = {}
 
 local function UpdateButtons()
-  -- create or update buttons for units in showTargets
   for i,unit in ipairs(TH.db.showTargets) do
     local btn = TH.buttons[i]
     if not btn then
@@ -61,7 +60,7 @@ local function UpdateButtons()
   end
 end
 
--- aura scanning: find a buff on the unit that matches your spells (HoT or buff)
+-- aura scanning
 local function GetTrackedBuffRemaining(unit, spellNames)
   local i = 1
   while true do
@@ -79,14 +78,14 @@ local function GetTrackedBuffRemaining(unit, spellNames)
   return nil
 end
 
--- tracked spell names
+-- tracked spells
 TH.trackedSpellNames = {
   ["Rejuvenation"] = true,
   ["Regrowth"] = true,
   ["Lifebloom"] = true,
 }
 
--- periodic update of timers
+-- periodic update
 local ticker
 local function StartTicker()
   if ticker then return end
@@ -111,25 +110,27 @@ local function StartTicker()
   end)
 end
 
--- slash commands (/thl)
-SLASH_TURTLEHEALLITE1 = "/thl"
-SlashCmdList["TURTLEHEALLITE"] = function(msg)
-    msg = msg or ""  -- s'assure que msg n'est jamais nil
-    local cmd, rest = msg:match("^(%S*)%s*(.-)$")
-    rest = rest or ""
+-- slash-command (/thl) robuste
+do
+    SLASH_TURTLEHEALLITE1 = "/thl"
+    SlashCmdList["TURTLEHEALLITE"] = function(msg)
+        if type(msg) ~= "string" then msg = "" end
+        local cmd, rest = msg:match("^(%S*)%s*(.-)$")
+        if type(rest) ~= "string" then rest = "" end
 
-    if cmd == "spell" and rest ~= "" then
-        TH.db.spells.primary = rest
-        print("TurtleHealLite: primary spell set to", rest)
-        UpdateButtons()
-    elseif cmd == "show" and rest ~= "" then
-        TH.db.showTargets = {}
-        for u in rest:gmatch("%S+") do table.insert(TH.db.showTargets, u) end
-        UpdateButtons()
-    else
-        print("TurtleHealLite commands:")
-        print("/thl spell <name>   - set primary heal spell (left click)")
-        print("/thl show <units>   - set unit list (player target mouseover party1 ...)")
+        if cmd == "spell" and rest ~= "" then
+            TH.db.spells.primary = rest
+            print("TurtleHealLite: primary spell set to", rest)
+            UpdateButtons()
+        elseif cmd == "show" and rest ~= "" then
+            TH.db.showTargets = {}
+            for u in rest:gmatch("%S+") do table.insert(TH.db.showTargets, u) end
+            UpdateButtons()
+        else
+            print("TurtleHealLite commands:")
+            print("/thl spell <name>   - set primary heal spell (left click)")
+            print("/thl show <units>   - set unit list (player target mouseover party1 ...)")
+        end
     end
 end
 
@@ -143,6 +144,6 @@ f:SetScript("OnEvent", function(self, event, arg1, ...)
     StartTicker()
     print("TurtleHealLite loaded. Use /thl for options.")
   elseif event == "UNIT_AURA" then
-    -- just let ticker update timers
+    -- ticker updates timers
   end
 end)
